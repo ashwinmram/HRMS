@@ -126,7 +126,7 @@ This concise solution promotes effective workforce management and informed decis
 3. **Create the database:**
 
    Create a MySQL database for the application. For example:
-   
+
    ```sql
    CREATE DATABASE hrms_database;
    ```
@@ -134,12 +134,13 @@ This concise solution promotes effective workforce management and informed decis
 4. **Configure environment variables:**
 
    Copy the `.env.example` file to `.env`:
-   
+
    ```bash
    cp .env.example .env
    ```
-   
+
    Open the `.env` file and configure the following:
+
    - `DB_CONNECTION=mysql`
    - `DB_HOST=127.0.0.1`
    - `DB_PORT=3306`
@@ -163,7 +164,7 @@ This concise solution promotes effective workforce management and informed decis
 7. **Run database migrations and seeders:**
 
    This will create all necessary tables and populate them with initial data including a default admin user:
-   
+
    ```bash
    php artisan migrate --seed
    ```
@@ -171,12 +172,12 @@ This concise solution promotes effective workforce management and informed decis
 8. **Install frontend dependencies (optional):**
 
    If you need to compile or modify frontend assets:
-   
+
    ```bash
    npm install
    npm run dev
    ```
-   
+
    Note: If the assets are already compiled in `public/assets/`, you can skip this step.
 
 9. **Start the development server:**
@@ -197,6 +198,27 @@ After running the migrations with seeders, you can log in using the following de
 - **Password:** `admin`
 
 **Important:** Change the default password after your first login for security purposes.
+
+### Messaging (SMS and WhatsApp)
+
+The app can send SMS and WhatsApp messages to employees (e.g. from **Messages > Bulk** and **Messages > Personal**). To use these features, configure the following.
+
+#### SMS
+
+SMS sending uses the **Syriatel BMS** API. Credentials are stored in the database, not in `.env`.
+
+- The application reads the first row of the `settings` table. Ensure that row has:
+  - `sms_api_sender` – Sender ID / shortcode
+  - `sms_api_username` – Syriatel API username
+  - `sms_api_password` – Syriatel API password
+- There is no admin UI for these values. After running migrations, insert or update the row (e.g. via `php artisan tinker` or SQL). The `settings` table also has `created_by` and `updated_by` columns; set them as required by your schema.
+
+#### WhatsApp
+
+WhatsApp sending uses a **WAHA-compatible** HTTP API (e.g. [WAHA](https://waha.devlike.pro/)).
+
+- The app sends requests to a local API at `http://localhost:3000` with session name `default`. You must run a WAHA (or compatible) server—for example on port 3000—and link a WhatsApp account to the `default` session.
+- Recipient numbers are currently formatted with country code `963` in the API call. For other regions, the code would need to be updated.
 
 ## Contribution
 
